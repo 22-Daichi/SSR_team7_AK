@@ -22,7 +22,7 @@ private:
 
     static constexpr uint8_t  SOUND_PLAYER_UART_NUM      = 2;
     static constexpr uint32_t SOUND_PLAYER_UART_BAUDRATE = 9600;
-    static constexpr uint8_t  SOUND_PLAYER_VOLUME        = 1;
+    static constexpr uint8_t  SOUND_PLAYER_VOLUME        = 20;
 
 public:
     Device();

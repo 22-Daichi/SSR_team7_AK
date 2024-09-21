@@ -48,7 +48,7 @@ auto ak::System::update(const ak::Input &input) -> ak::Output {
         this->sound_player_is_active = !this->sound_player_is_active;
     }
 
-    const bool sound_only_mode = input.state.button.r2;
+    const bool sound_only_mode = input.state.analog.button.l2 > 10;
 
     // r2が押されている間(`sound_only_mode` == true)は機体は動かない (音だけ)
     if (!sound_only_mode) {
@@ -140,7 +140,7 @@ auto ak::System::update(const ak::Input &input) -> ak::Output {
                                                                        : TrackId::NONE;
         } else {
             // 大体5秒おきくらい
-            if (move_steps % (5000 / Delay::TIME_MS) == 0) {
+            if (move_steps % (3000 / Delay::TIME_MS) == 0) {
                 output.sound_track_id = TrackId::MOVE;
             }
             output.sound_track_id = (input.event.button_down.start && !this->stop) ? TrackId::RESTART
@@ -148,7 +148,8 @@ auto ak::System::update(const ak::Input &input) -> ak::Output {
                                     : input.event.button_down.r1                   ? TrackId::LIFT_UP
                                     : input.event.button_down.up || input.event.button_down.down
                                         ? TrackId::ANGLE_OF_FIRE
-                                        : TrackId::NONE;
+                                    : input.event.button_down.circle ? TrackId::FIRE
+                                                                     : TrackId::NONE;
         }
     } else {
         output.sound_player_led = LOW;
