@@ -18,8 +18,22 @@ auto ak::Device::setup() -> void {
     this->serial_for_sound_player.begin(SOUND_PLAYER_UART_BAUDRATE);
     this->sound_player.begin(serial_for_sound_player);
     this->sound_player.volume(SOUND_PLAYER_VOLUME);
+    pinMode(assign::STOP_LED_PIN, OUTPUT);
+    pinMode(assign::SOUND_PLAYER_LED_PIN, OUTPUT);
 
     this->stop();
+}
+
+auto ak::Device::controller_attach_on_recieved(void (*on_recieved)()) -> void {
+    this->controller.attach_on_recieved(on_recieved);
+}
+
+auto ak::Device::controller_attach_on_connected(void (*on_connected)()) -> void {
+    this->controller.attach_on_connected(on_connected);
+}
+
+auto ak::Device::controller_attach_on_disconnected(void (*on_disconnected)()) -> void {
+    this->controller.attach_on_disconnected(on_disconnected);
 }
 
 auto ak::Device::stop() -> void {

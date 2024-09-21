@@ -33,28 +33,36 @@ auto ak::System::set_pulse_width_launcher(int16_t trigger_on, int16_t trigger_of
 auto ak::System::update(const ak::Input &input) -> ak::Output {
     auto output = ak::Output::stop();
 
-    if (input.event.button_down.start) {
-        this->stop = !this->stop;
+    if (input.event.button_down.start && this->stop) {
+        this->stop = false;
+    } else if (input.event.button_down.start && !this->stop) {
+        this->stop = true;
+        return output;
+    } else if (this->stop) {
+        return output;
     }
     if (input.event.button_down.select) {
         this->sound_player_is_active = !this->sound_player_is_active;
     }
-
-    if (this->stop) {
-        return output;
-    }
+    output.stop_led         = LOW;
+    output.sound_player_led = static_cast<uint8_t>(this->sound_player_is_active);
 
     const bool sound_only_mode = input.state.button.r2;
 
     // r2が押されている間(`sound_only_mode` == true)は機体は動かない (音だけ)
     if (!sound_only_mode) {
         {  // arm
+            // max: 1024 (だいたい1000で計算)
+            // 1000 * (500 / 20000) = 25
+            // 1000 * (2400 / 20000) = 120
             // l1ボタンで開いたり閉じたり
-            output.arm.hand.pulse_width_us =
-                input.state.button.l1 ? this->pulse_width_arm_hand_open : this->pulse_width_arm_hand_close;
+            output.arm.hand.duty = static_cast<uint32_t>(
+                map(input.state.button.l1 ? this->pulse_width_arm_hand_open : this->pulse_width_arm_hand_close, 0, 180,
+                    25, 120));
             // r1ボタンでリフトを上下
-            output.arm.lift.pulse_width_us =
-                input.state.button.r1 ? this->pulse_width_arm_lift_up : this->pulse_width_arm_lift_down;
+            output.arm.lift.duty = static_cast<uint32_t>(
+                map(input.state.button.r1 ? this->pulse_width_arm_lift_up : this->pulse_width_arm_lift_down, 0, 180, 25,
+                    120));
         }
 
         {  // launcher
@@ -72,11 +80,13 @@ auto ak::System::update(const ak::Input &input) -> ak::Output {
 
             // コンプレッサーは回しっぱなし
             output.launcher.ball_compressor = {
-                .dir1 = static_cast<uint8_t>(f_c), .dir2 = static_cast<uint8_t>(f_c), .pwm = 255};
+                .dir1 = static_cast<uint8_t>(f_c), .dir2 = static_cast<uint8_t>(!f_c), .pwm = 255};
 
             // circleボタンで発射
-            output.launcher.trigger.pulse_width_us = input.state.button.circle ? this->pulse_width_launcher_trigger_on
-                                                                               : this->pulse_width_launcher_trigger_off;
+            output.launcher.trigger.duty =
+                static_cast<uint32_t>(map(input.state.button.circle ? this->pulse_width_launcher_trigger_on
+                                                                    : this->pulse_width_launcher_trigger_off,
+                                          0, 180, 25, 120));
         }
 
         {  // stearing

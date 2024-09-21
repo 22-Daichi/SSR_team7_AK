@@ -28,6 +28,9 @@ public:
     Device();
     Device(device::Arm arm, device::Controller controller, device::Launcher launcher, device::Stearing stearing);
     auto setup() -> void;
+    auto controller_attach_on_recieved(void (*on_recieved)()) -> void;
+    auto controller_attach_on_connected(void (*on_connected)()) -> void;
+    auto controller_attach_on_disconnected(void (*on_disconnected)()) -> void;
     auto stop() -> void;
     auto get_input() const -> Input;
     auto set_value(const Output &value) -> void;
