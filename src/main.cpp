@@ -19,10 +19,10 @@ void setup() {
     Serial.begin(9600);
     dev.setup();
     sys.init();
-    sys.set_forward_launcher(true, true);
+    sys.set_forward_launcher(true, false);
     sys.set_forward_stearing(true, true, true);
-    sys.set_pulse_width_arm(0, 100, 90, 0);
-    sys.set_pulse_width_launcher(100, 0);
+    sys.set_pulse_width_arm(0, 100, 0, 90);
+    sys.set_pulse_width_launcher(150, 0);
     dev.controller_attach_on_recieved(on_recieved);
 }
 
