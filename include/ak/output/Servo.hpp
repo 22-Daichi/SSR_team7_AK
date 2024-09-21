@@ -5,7 +5,7 @@
 namespace ak::output {
 struct Servo
 {
-    int16_t duty;
+    uint32_t duty;
 
     static auto stop() -> Servo;
 };

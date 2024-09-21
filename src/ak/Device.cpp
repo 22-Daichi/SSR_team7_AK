@@ -55,3 +55,15 @@ auto ak::Device::set_value(const Output &value) -> void {
     digitalWrite(assign::STOP_LED_PIN, value.stop_led);
     digitalWrite(assign::SOUND_PLAYER_LED_PIN, value.sound_player_led);
 }
+
+auto ak::Device::controller_attach_on_recieved(void (*on_recieved)()) -> void {
+    this->controller.attach_on_recieved(on_recieved);
+}
+
+auto ak::Device::controller_attach_on_connected(void (*on_connected)()) -> void {
+    this->controller.attach_on_connected(on_connected);
+}
+
+auto ak::Device::controller_attach_on_disconnected(void (*on_disconnected)()) -> void {
+    this->controller.attach_on_disconnected(on_disconnected);
+}
